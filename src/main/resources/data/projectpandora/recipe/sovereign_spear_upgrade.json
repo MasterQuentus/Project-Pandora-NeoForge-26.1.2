@@ -1,0 +1,18 @@
+{
+  "type": "projectpandora:sovereign_spear_upgrade",
+  "ingredients": [
+    {
+      "item": "projectpandora:pandora_contract"
+    },
+    {
+      "item": "projectpandora:pandora_soul"
+    },
+    {
+      "item": "projectpandora:sovereign_spear"
+    }
+  ],
+  "result": {
+    "id": "projectpandora:sovereign_spear",
+    "count": 1
+  }
+}

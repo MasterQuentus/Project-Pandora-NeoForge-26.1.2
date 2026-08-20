@@ -27,6 +27,9 @@ public class ModCreativeModTabs {
                     .displayItems((itemDisplayParameters, output) -> {
 
                         output.accept(ModBlocks.PANDORAS_BOX);
+                        output.accept(ModItems.SOVEREIGN_SPEAR);
+                        output.accept(ModItems.PANDORA_CONTRACT);
+                        output.accept(ModItems.PANDORA_SOUL);
 
 
                     }).build());

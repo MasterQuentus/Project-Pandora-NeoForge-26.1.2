@@ -5,6 +5,7 @@ import com.masterquentus.projectpandora.creativemodtab.ModCreativeModTabs;
 import com.masterquentus.projectpandora.entity.ModEntities;
 import com.masterquentus.projectpandora.item.ModItems;
 import com.masterquentus.projectpandora.loot.ModLootModifiers;
+import com.masterquentus.projectpandora.recipe.ModRecipes;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -28,6 +29,8 @@ public class ProjectPandora {
         modEventBus.addListener(this::commonSetup);
 
         ModCreativeModTabs.register(modEventBus);
+
+        ModRecipes.register(modEventBus);
 
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);

@@ -181,4 +181,8 @@ idea {
         downloadSources = true
         downloadJavadoc = true
     }
+
+    tasks.withType(ProcessResources.class).configureEach {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
 }

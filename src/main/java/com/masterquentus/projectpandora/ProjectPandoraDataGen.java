@@ -3,6 +3,7 @@ package com.masterquentus.projectpandora;
 import com.masterquentus.projectpandora.datagen.ModAdvancementProvider;
 import com.masterquentus.projectpandora.datagen.ModBlockLootTableProvider;
 import com.masterquentus.projectpandora.datagen.ModGlobalLootModifierProvider;
+import com.masterquentus.projectpandora.datagen.ModModelProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
@@ -21,6 +22,8 @@ public class ProjectPandoraDataGen {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
         var lookupProvider = event.getLookupProvider();
+
+        generator.addProvider(true, new ModModelProvider(packOutput));
 
         generator.addProvider(true, new LootTableProvider(packOutput, Collections.emptySet(),
                 List.of(new LootTableProvider.SubProviderEntry(ModBlockLootTableProvider::new, LootContextParamSets.BLOCK)), lookupProvider));
