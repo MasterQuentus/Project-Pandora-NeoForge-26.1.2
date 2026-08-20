@@ -18,7 +18,7 @@ public class ModBlocks {
 
 
     public static final DeferredBlock<Block> PANDORAS_BOX = registerBlock("pandoras_box",
-            properties -> new PandorasBox(properties.strength(3.0f).noOcclusion())
+            properties -> new PandorasBox(properties.strength(3.0f).explosionResistance(3600000.0F).noOcclusion())
     );
 
 

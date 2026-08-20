@@ -2,6 +2,7 @@ package com.masterquentus.projectpandora.datagen;
 
 import com.masterquentus.projectpandora.ProjectPandora;
 import com.masterquentus.projectpandora.block.ModBlocks;
+import com.masterquentus.projectpandora.item.ModItems;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.criterion.AnyBlockInteractionTrigger;
 import net.minecraft.advancements.criterion.InventoryChangeTrigger;
@@ -61,7 +62,7 @@ public class ModAdvancementProvider implements AdvancementSubProvider {
                         AdvancementType.CHALLENGE,
                         true, true, true
                 )
-                .addCriterion("master_milestone", InventoryChangeTrigger.TriggerInstance.hasItems(ModBlocks.PANDORAS_BOX.get()))
+                .addCriterion("master_milestone", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SOVEREIGN_SPEAR.get()))
                 .save(saver, Identifier.fromNamespaceAndPath(ProjectPandora.MOD_ID, "master_of_relics").toString());
     }
 }

@@ -3,9 +3,11 @@ package com.masterquentus.projectpandora.block.custom;
 import com.masterquentus.projectpandora.block.entity.PandorasBoxBlockEntity;
 import com.masterquentus.projectpandora.entity.ModEntities;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -97,6 +99,18 @@ public class PandorasBox extends HorizontalDirectionalBlock implements EntityBlo
             }
         }
                 : null;
+    }
+
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof PandorasBoxBlockEntity entity) {
+            if (entity.isOpening() && !player.isCreative()) {
+                player.sendSystemMessage(Component.literal("🔒 Pandora’s Box cannot be destroyed while active!")
+                        .withStyle(ChatFormatting.RED));
+                return state; // Cancels breaking by returning the block state unchanged
+            }
+        }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override

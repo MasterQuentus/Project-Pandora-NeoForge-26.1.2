@@ -103,7 +103,7 @@ public class PandorasBoxBlockEntity extends BlockEntity {
     public NonNullList<ItemStack> inventory = NonNullList.withSize(27, ItemStack.EMPTY);
 
     private int animationTicks = 0;
-    private boolean isOpening = false;
+    public boolean isOpening = false;
 
     private int currentRound = 0;
     private int totalRounds = 5 + new Random().nextInt(6);
@@ -542,11 +542,14 @@ public class PandorasBoxBlockEntity extends BlockEntity {
         if (be instanceof ChestBlockEntity chest) {
             for (int i = 0; i < 3 + random.nextInt(4); i++) {
                 String rewardId = selectedLoot.get(random.nextInt(selectedLoot.size()));
-                Item rewardItem = BuiltInRegistries.ITEM.get(Identifier.parse(rewardId))
-                        .map(Holder::value)
-                        .orElse(Items.AIR);
 
-                if (rewardItem != null && rewardItem != Items.AIR) {
+                // Fixed lookup using ResourceLocation and checking against Items.AIR explicitly
+                Identifier itemLocation = Identifier.tryParse(rewardId);
+                Item rewardItem = (itemLocation != null)
+                        ? BuiltInRegistries.ITEM.get(itemLocation).map(Holder::value).orElse(Items.AIR)
+                        : Items.AIR;
+
+                if (rewardItem != Items.AIR) {
                     ItemStack stack = new ItemStack(rewardItem, 1 + random.nextInt(2));
                     chest.setItem(random.nextInt(chest.getContainerSize()), stack);
                 }
@@ -588,16 +591,16 @@ public class PandorasBoxBlockEntity extends BlockEntity {
     private EntityType<?> selectRandomMob() {
         Random random = new Random();
 
-        // Boss chances
-        if (random.nextDouble() < 0.08) return EntityType.WARDEN;
-        if (random.nextDouble() < 0.05) return EntityType.WITHER;
-
-        // Build a dynamic pool of all hostile mobs (vanilla + modded)
+        // Build a dynamic pool of all hostile mobs (vanilla + modded), excluding bosses and dragons
         List<EntityType<?>> pool = new ArrayList<>();
 
         for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
             if (type.getCategory() == MobCategory.MONSTER
-                    && type != EntityType.ENDER_DRAGON) {   // ← exclude Ender Dragon
+                    && type != EntityType.ENDER_DRAGON
+                    && type != EntityType.WARDEN
+                    && type != EntityType.WITHER
+                    && type != EntityType.GIANT
+                    && type != EntityType.CREAKING){   // ← Excludes Warden and Wither from standard waves
 
                 pool.add(type);
             }
@@ -780,6 +783,10 @@ public class PandorasBoxBlockEntity extends BlockEntity {
                 "Twilight Reaper"
         );
         return names.get(new Random().nextInt(names.size()));
+    }
+
+    public boolean isOpening() {
+        return this.isOpening;
     }
 
     private void broadcastMessage(String message, ChatFormatting color) {
