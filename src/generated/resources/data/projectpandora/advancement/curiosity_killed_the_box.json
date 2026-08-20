@@ -1,0 +1,32 @@
+{
+  "criteria": {
+    "has_pandoras_box": {
+      "conditions": {
+        "items": [
+          {
+            "items": "projectpandora:pandoras_box_item"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "minecraft:gui/advancements/backgrounds/adventure",
+    "description": {
+      "translate": "advancements.projectpandora.curiosity_killed_the_box.description"
+    },
+    "icon": {
+      "id": "projectpandora:pandoras_box_item"
+    },
+    "title": {
+      "translate": "advancements.projectpandora.curiosity_killed_the_box.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_pandoras_box"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

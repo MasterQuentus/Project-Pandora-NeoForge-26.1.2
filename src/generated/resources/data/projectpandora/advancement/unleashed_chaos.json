@@ -1,0 +1,26 @@
+{
+  "parent": "projectpandora:curiosity_killed_the_box",
+  "criteria": {
+    "activated_box": {
+      "trigger": "minecraft:any_block_use"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.projectpandora.unleashed_chaos.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "projectpandora:pandoras_box_item"
+    },
+    "title": {
+      "translate": "advancements.projectpandora.unleashed_chaos.title"
+    }
+  },
+  "requirements": [
+    [
+      "activated_box"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

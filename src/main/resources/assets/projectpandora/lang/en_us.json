@@ -3,5 +3,12 @@
 
   "block.projectpandora.pandoras_box_item": "Pandora's Box",
 
+  "advancements.projectpandora.curiosity_killed_the_box.title": "Curiosity Killed the Box",
+  "advancements.projectpandora.curiosity_killed_the_box.description": "Find and pick up your very first Pandora's Box.",
+  "advancements.projectpandora.unleashed_chaos.title": "Unleashed Chaos",
+  "advancements.projectpandora.unleashed_chaos.description": "Open or interact with Pandora's Box.",
+  "advancements.projectpandora.master_of_relics.title": "Master of Relics",
+  "advancements.projectpandora.master_of_relics.description": "Collect unique gear and conquer the dangers within.",
+
   "creativetab.projectpandora_items": "Project Pandora"
 }

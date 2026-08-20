@@ -1,0 +1,34 @@
+{
+  "parent": "projectpandora:unleashed_chaos",
+  "criteria": {
+    "master_milestone": {
+      "conditions": {
+        "items": [
+          {
+            "items": "projectpandora:pandoras_box_item"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.projectpandora.master_of_relics.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "id": "projectpandora:pandoras_box_item"
+    },
+    "title": {
+      "translate": "advancements.projectpandora.master_of_relics.title"
+    }
+  },
+  "requirements": [
+    [
+      "master_milestone"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,5 +1,6 @@
 package com.masterquentus.projectpandora;
 
+import com.masterquentus.projectpandora.datagen.ModAdvancementProvider;
 import com.masterquentus.projectpandora.datagen.ModBlockLootTableProvider;
 import com.masterquentus.projectpandora.datagen.ModGlobalLootModifierProvider;
 import net.minecraft.data.DataGenerator;
@@ -25,5 +26,12 @@ public class ProjectPandoraDataGen {
                 List.of(new LootTableProvider.SubProviderEntry(ModBlockLootTableProvider::new, LootContextParamSets.BLOCK)), lookupProvider));
 
         generator.addProvider(true, new ModGlobalLootModifierProvider(packOutput, lookupProvider));
+
+        // Advancements
+        event.createProvider(output -> new net.minecraft.data.advancements.AdvancementProvider(
+                output,
+                lookupProvider,
+                List.of(new ModAdvancementProvider())
+        ));
     }
 }
