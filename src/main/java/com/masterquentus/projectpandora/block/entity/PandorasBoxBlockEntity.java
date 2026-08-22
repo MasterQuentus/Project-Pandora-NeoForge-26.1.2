@@ -2,6 +2,7 @@ package com.masterquentus.projectpandora.block.entity;
 
 import com.masterquentus.projectpandora.block.custom.PandorasBox;
 import com.masterquentus.projectpandora.entity.ModEntities;
+import com.masterquentus.projectpandora.item.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.*;
 import net.minecraft.core.particles.ParticleTypes;
@@ -54,20 +55,6 @@ public class PandorasBoxBlockEntity extends BlockEntity {
     private static List<Item> RARE_POOL = new ArrayList<>();
     private static List<Item> LEGENDARY_POOL = new ArrayList<>();
     private static boolean poolsInitialized = false;
-
-    // Hardcoded loot tables (replace with real item IDs later if needed)
-    private static final List<String> COMMON_CHEST_LOOT = List.of(
-            "minecraft:iron_ingot", "minecraft:gold_ingot", "minecraft:coal", "minecraft:arrow"
-    );
-    private static final List<String> UNCOMMON_CHEST_LOOT = List.of(
-            "minecraft:diamond", "minecraft:emerald", "minecraft:golden_apple", "minecraft:experience_bottle"
-    );
-    private static final List<String> RARE_CHEST_LOOT = List.of(
-            "minecraft:netherite_scrap", "minecraft:enchanted_golden_apple", "minecraft:totem_of_undying"
-    );
-    private static final List<String> LEGENDARY_CHEST_LOOT = List.of(
-            "minecraft:netherite_ingot", "minecraft:elytra", "minecraft:nether_star"
-    );
 
     public PandorasBoxBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState) {
         super(type, worldPosition, blockState);
@@ -250,10 +237,30 @@ public class PandorasBoxBlockEntity extends BlockEntity {
         if (player == null) return;
 
         Random random = new Random();
-        ItemStack drop = random.nextBoolean()
-                ? new ItemStack(Items.DIAMOND, 2 + random.nextInt(3))
-                : new ItemStack(Items.EMERALD, 3 + random.nextInt(4));
 
+        // Option A: Pull a completely random item from the entire cross-mod registry stream
+        List<Item> allItems = new ArrayList<>(BuiltInRegistries.ITEM.stream().toList());
+
+        ItemStack drop;
+        if (!allItems.isEmpty() && random.nextBoolean()) {
+            // Grab a random item from the universal mod pool and scale its count dynamically
+            Item randomItem = allItems.get(random.nextInt(allItems.size()));
+            drop = new ItemStack(randomItem);
+            int maxStack = drop.getMaxStackSize();
+            int count = random.nextInt(Math.min(maxStack, 4)) + 1;
+            drop.setCount(count);
+        } else {
+            // Option B: Fallback or custom high-tier pool (replace these with your custom mod items when ready!)
+            List<ItemStack> valuableFallbacks = List.of(
+                    new ItemStack(Items.NETHER_STAR, 1),
+                    new ItemStack(Items.DIAMOND_BLOCK, 1),
+                    new ItemStack(Items.ENCHANTED_GOLDEN_APPLE, 1),
+                    new ItemStack(Items.ANCIENT_DEBRIS, 2 + random.nextInt(2))
+            );
+            drop = valuableFallbacks.get(random.nextInt(valuableFallbacks.size()));
+        }
+
+        // Spawn the item entity right above the player or box
         level.addFreshEntity(new ItemEntity(level, player.getX(), player.getY() + 1, player.getZ(), drop));
     }
 
@@ -329,7 +336,6 @@ public class PandorasBoxBlockEntity extends BlockEntity {
         spawnTieredRewardChest();
 
         if (level instanceof ServerLevel serverLevel) {
-            // serverLevel.setDayTime(0); // Removed because setDayTime is no longer a method on ServerLevel
             broadcastMessage("☀️ A new day dawns as Pandora’s Box closes!", ChatFormatting.GOLD);
         }
         setChanged();
@@ -406,8 +412,6 @@ public class PandorasBoxBlockEntity extends BlockEntity {
                     mobEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 1200, 0));
                 }
 
-                // giveMobWeapon(mobEntity, level.getRandom()); // uncomment if you still have this method
-
                 if (mobEntity instanceof Warden warden) {
                     warden.increaseAngerAt(nearestPlayer, 150, true);
                     warden.setTarget(nearestPlayer);
@@ -419,7 +423,6 @@ public class PandorasBoxBlockEntity extends BlockEntity {
             }
         }
 
-        // Chaos mode completely removed
         roundCooldown = 100;
         applyRandomBattleEffects();
     }
@@ -510,52 +513,57 @@ public class PandorasBoxBlockEntity extends BlockEntity {
         broadcastMessage("💀 " + bossName + " has risen from the darkness!", ChatFormatting.RED);
     }
 
-    // Chaos mode method completely deleted
-
     private void spawnTieredRewardChest() {
         if (level == null || level.isClientSide()) return;
 
         Random random = new Random();
-        double roll = random.nextDouble();
-
-        List<String> selectedLoot;
-        String chestTier;
-
-        if (roll < 0.05) {          // 5% Legendary
-            selectedLoot = LEGENDARY_CHEST_LOOT;
-            chestTier = "LEGENDARY";
-        } else if (roll < 0.20) {   // 15% Rare
-            selectedLoot = RARE_CHEST_LOOT;
-            chestTier = "RARE";
-        } else if (roll < 0.50) {   // 30% Uncommon
-            selectedLoot = UNCOMMON_CHEST_LOOT;
-            chestTier = "UNCOMMON";
-        } else {
-            selectedLoot = COMMON_CHEST_LOOT;
-            chestTier = "COMMON";
-        }
-
         BlockPos chestPos = worldPosition.offset(1, 0, 1);
         level.setBlockAndUpdate(chestPos, Blocks.CHEST.defaultBlockState());
 
         BlockEntity be = level.getBlockEntity(chestPos);
         if (be instanceof ChestBlockEntity chest) {
-            for (int i = 0; i < 3 + random.nextInt(4); i++) {
-                String rewardId = selectedLoot.get(random.nextInt(selectedLoot.size()));
+            List<Item> allItems = new ArrayList<>(BuiltInRegistries.ITEM.stream().toList());
 
-                // Fixed lookup using ResourceLocation and checking against Items.AIR explicitly
-                Identifier itemLocation = Identifier.tryParse(rewardId);
-                Item rewardItem = (itemLocation != null)
-                        ? BuiltInRegistries.ITEM.get(itemLocation).map(Holder::value).orElse(Items.AIR)
-                        : Items.AIR;
+            // 1. Force-add your custom contract, soul, and weapon items here!
+            // Replace Items.DIAMOND, Items.NETHER_STAR, etc., with your actual registered mod items
+            // (e.g., ModItems.DEMONIC_CONTRACT.get(), ModItems.SOUL_GEM.get(), ModItems.SOVEREIGN_GAVEL.get())
+            List<ItemStack> guaranteedRewards = List.of(
+                    new ItemStack(ModItems.PANDORA_CONTRACT.get()), // Placeholder for your Contract item
+                    new ItemStack(ModItems.PANDORA_SOUL.get()), // Placeholder for your Soul item
+                    new ItemStack(ModItems.SOVEREIGN_SPEAR.get()) // Placeholder for your Weapon item
+            );
 
-                if (rewardItem != Items.AIR) {
-                    ItemStack stack = new ItemStack(rewardItem, 1 + random.nextInt(2));
-                    chest.setItem(random.nextInt(chest.getContainerSize()), stack);
+            // Place guaranteed special items into the chest first
+            for (ItemStack specialStack : guaranteedRewards) {
+                int slot;
+                do {
+                    slot = random.nextInt(chest.getContainerSize());
+                } while (!chest.getItem(slot).isEmpty());
+                chest.setItem(slot, specialStack);
+            }
+
+            // 2. Fill the rest of the chest dynamically from the cross-mod registry stream
+            if (!allItems.isEmpty()) {
+                int rollCount = 2 + random.nextInt(3); // Add a few extra random items
+                for (int i = 0; i < rollCount; i++) {
+                    Item randomItem = allItems.get(random.nextInt(allItems.size()));
+                    ItemStack stack = new ItemStack(randomItem);
+
+                    int maxStack = stack.getMaxStackSize();
+                    int count = random.nextInt(Math.min(maxStack, 4)) + 1;
+                    stack.setCount(count);
+
+                    int slot;
+                    do {
+                        slot = random.nextInt(chest.getContainerSize());
+                    } while (!chest.getItem(slot).isEmpty());
+
+                    chest.setItem(slot, stack);
                 }
             }
         }
-        broadcastMessage("📦 A " + chestTier + " Reward Chest has spawned! Open it for rewards!", ChatFormatting.GOLD);
+
+        broadcastMessage("📦 A legendary bounty containing dark contracts and ancient relics has appeared!", ChatFormatting.GOLD);
     }
 
     private void endEventSuccess() {
@@ -591,7 +599,6 @@ public class PandorasBoxBlockEntity extends BlockEntity {
     private EntityType<?> selectRandomMob() {
         Random random = new Random();
 
-        // Build a dynamic pool of all hostile mobs (vanilla + modded), excluding bosses and dragons
         List<EntityType<?>> pool = new ArrayList<>();
 
         for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
@@ -600,13 +607,12 @@ public class PandorasBoxBlockEntity extends BlockEntity {
                     && type != EntityType.WARDEN
                     && type != EntityType.WITHER
                     && type != EntityType.GIANT
-                    && type != EntityType.CREAKING){   // ← Excludes Warden and Wither from standard waves
+                    && type != EntityType.CREAKING){
 
                 pool.add(type);
             }
         }
 
-        // Fallback
         if (pool.isEmpty()) {
             return EntityType.ZOMBIE;
         }
@@ -625,7 +631,6 @@ public class PandorasBoxBlockEntity extends BlockEntity {
             applyFailureEffects(player);
             failed = true;
         } else {
-            // Hardcoded leave radius = 32 blocks
             if (player.distanceToSqr(Vec3.atCenterOf(worldPosition)) > 32 * 32) {
                 broadcastMessage("⚠️ The event was abandoned! Pandora’s Box remains restless...", ChatFormatting.RED);
                 applyFailureEffects(player);
